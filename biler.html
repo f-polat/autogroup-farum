@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brugte biler – AutoGroup Farum</title>
+<meta name="description" content="Se brugte biler til salg hos AutoGroup Farum på Farum Gydevej 79. Køb, salg og bytte. Ring 52 90 93 90.">
+<meta name="theme-color" content="#16191e">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="page">
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <div class="nav-bar">
+      <a href="index.html" class="logo" aria-label="AutoGroup Farum, forside">
+        <svg viewBox="0 0 92 18" aria-hidden="true"><path d="M2 15 C14 4, 34 1, 52 3 C66 4.5, 78 8, 90 13 C76 9, 62 7, 50 7.5 C40 8, 34 9.5, 30 12 L24 12 C20 10, 12 10.5, 2 15 Z" fill="#d7262e"/><path d="M28 13 C40 10, 62 9, 86 14" stroke="#d7262e" stroke-width="1.2" fill="none"/></svg>
+        <span>AutoGroup Farum</span>
+      </a>
+      <nav class="nav-links" id="links" aria-label="Hovedmenu">
+        <a href="index.html#vaerksted">Værksted</a>
+        <a href="biler.html" aria-current="page">Brugte biler</a>
+        <a href="index.html#om">Om os</a>
+        <a href="index.html#kontakt">Kontakt</a>
+        <a href="index.html#kontakt" class="btn btn-blue">Book tid</a>
+      </nav>
+      <button class="burger" id="burger" aria-label="Åbn menu" aria-expanded="false" aria-controls="links">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16M4 16h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-head">
+    <h1 class="display">Brugte biler</h1>
+    <p class="lede">Alle biler er gennemgået på vores eget værksted. Vi tager gerne din nuværende bil i bytte.</p>
+  </div>
+
+  <div class="wrap">
+    <form class="filters" id="filters" role="search" aria-label="Filtrér biler">
+      <label class="f-search">Søg<input type="search" name="q" placeholder="Fx Golf, hybrid, stationcar"></label>
+      <label>Mærke<select name="maerke"><option value="">Alle</option></select></label>
+      <label>Brændstof<select name="braendstof"><option value="">Alle</option></select></label>
+      <label>Gear<select name="gear"><option value="">Alle</option></select></label>
+      <label>Maks. pris
+        <select name="maxpris">
+          <option value="">Ingen grænse</option>
+          <option value="100000">100.000 kr.</option>
+          <option value="150000">150.000 kr.</option>
+          <option value="200000">200.000 kr.</option>
+          <option value="300000">300.000 kr.</option>
+          <option value="500000">500.000 kr.</option>
+        </select>
+      </label>
+      <label>Sortér
+        <select name="sort">
+          <option value="nyeste">Nyeste først</option>
+          <option value="pris-op">Pris: lav til høj</option>
+          <option value="pris-ned">Pris: høj til lav</option>
+          <option value="km">Færrest km</option>
+        </select>
+      </label>
+    </form>
+
+    <div class="result-bar">
+      <span id="count" aria-live="polite"></span>
+      <button class="linkbtn" type="button" id="reset" hidden>Nulstil filtre</button>
+    </div>
+
+    <ul class="cars" id="cars"></ul>
+    <div class="empty" id="empty" hidden>
+      <h2>Ingen biler matcher din søgning</h2>
+      <p>Prøv at fjerne et filter – eller ring, så finder vi bilen for dig.</p>
+      <button class="btn btn-blue" type="button" id="reset2">Nulstil filtre</button>
+    </div>
+
+    <section class="find-for-you">
+      <div>
+        <h2>Kan du ikke finde den rigtige bil?</h2>
+        <p>Fortæl os, hvad du leder efter, så finder vi den til dig.</p>
+      </div>
+      <a href="tel:+4552909390" class="btn btn-blue">Ring 52 90 93 90</a>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© <span id="yr"></span> AutoGroup Farum, CVR 44769832</span>
+    <span>Farum Gydevej 79, 3520 Farum, tlf. <a href="tel:+4552909390">52 90 93 90</a></span>
+  </div>
+</footer>
+
+<div class="callbar">
+  <a href="tel:+4552909390" class="btn btn-line">Ring</a>
+  <a href="index.html#kontakt" class="btn btn-blue">Book tid</a>
+</div>
+
+<script src="assets/biler-data.js"></script>
+<script src="assets/site.js"></script>
+<script>
+  const cars = window.CARS || [];
+  const form = document.getElementById('filters');
+  const list = document.getElementById('cars'), empty = document.getElementById('empty');
+  const count = document.getElementById('count'), reset = document.getElementById('reset');
+
+  // Udfyld valgmulighederne ud fra de biler, der faktisk er på lager.
+  for (const key of ['maerke', 'braendstof', 'gear']) {
+    const values = [...new Set(cars.map(c => c[key]))].sort((a, b) => a.localeCompare(b, 'da'));
+    form[key].insertAdjacentHTML('beforeend', values.map(v => `<option>${esc(v)}</option>`).join(''));
+  }
+
+  // Filtrene gemmes i adressen, så man kan dele et link til en søgning.
+  const params = new URLSearchParams(location.search);
+  for (const el of form.elements) if (params.has(el.name)) el.value = params.get(el.name);
+
+  function render() {
+    const f = Object.fromEntries(new FormData(form));
+    const q = f.q.trim().toLowerCase();
+    let shown = cars.filter(c =>
+      (!q || [c.maerke, c.model, c.variant, c.braendstof, c.gear, c.farve, c.aar, ...(c.udstyr || [])].join(' ').toLowerCase().includes(q)) &&
+      (!f.maerke || c.maerke === f.maerke) &&
+      (!f.braendstof || c.braendstof === f.braendstof) &&
+      (!f.gear || c.gear === f.gear) &&
+      (!f.maxpris || c.pris <= +f.maxpris)
+    );
+    const sorters = {
+      'nyeste': (a, b) => b.aar - a.aar || a.km - b.km,
+      'pris-op': (a, b) => a.pris - b.pris,
+      'pris-ned': (a, b) => b.pris - a.pris,
+      'km': (a, b) => a.km - b.km
+    };
+    shown.sort(sorters[f.sort]);
+    shown.sort((a, b) => !!a.solgt - !!b.solgt);
+
+    list.innerHTML = shown.map(carCard).join('');
+    empty.hidden = shown.length > 0;
+    const active = q || f.maerke || f.braendstof || f.gear || f.maxpris;
+    reset.hidden = !active;
+    count.textContent = active ? `${shown.length} af ${cars.length} biler` : `${cars.length} biler på lager`;
+
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries(f)) if (v && !(k === 'sort' && v === 'nyeste')) p.set(k, v);
+    history.replaceState(null, '', p.toString() ? '?' + p : location.pathname);
+  }
+
+  form.addEventListener('input', render);
+  form.addEventListener('submit', e => e.preventDefault());
+  const clear = () => { form.reset(); render(); };
+  reset.addEventListener('click', clear);
+  document.getElementById('reset2').addEventListener('click', clear);
+  render();
+</script>
+</body>
+</html>
