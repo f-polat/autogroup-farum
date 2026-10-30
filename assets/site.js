@@ -34,8 +34,8 @@
           .filter(([k]) => k !== 'form-name' && k !== 'bot-field')
           .map(([k, v]) => `${k[0].toUpperCase() + k.slice(1)}: ${v}`).join('\n');
         const subject = (form.dataset.subject || 'Forespørgsel') + (d.get('ydelse') ? ' – ' + d.get('ydelse') : '');
-        location.href = 'mailto:info@autogroupfarum.dk?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-        ok.textContent = 'Din e-mail åbner nu med forespørgslen klar til at sende. Du kan også ringe på 52 90 93 90.';
+        location.href = 'mailto:info@autogroupfarum.example?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        ok.textContent = 'Din e-mail åbner nu med forespørgslen klar til at sende. Du kan også ringe på 12 34 56 78.';
       }
       ok.style.display = 'block';
       btn.disabled = false; btn.textContent = label;
